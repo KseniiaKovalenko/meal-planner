@@ -1,0 +1,13 @@
+{
+  "name": "Планувальник їжі",
+  "short_name": "Меню",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b1c12",
+  "theme_color": "#0b1c12",
+  "icons": [{
+    "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230b1c12'/%3E%3Cpath d='M56 40v56c0 8.8 7.2 16 16 16h16a16 16 0 0 0 16-16V40M80 40v144M152 120V40a40 40 0 0 0-40 40v48h28v56' stroke='%2352c278' stroke-width='12' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",
+    "sizes": "192x192",
+    "type": "image/svg+xml"
+  }]
+}
