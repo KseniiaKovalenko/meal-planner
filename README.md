@@ -75,7 +75,7 @@ python3 -m http.server 8080
 1. Завантажте всі файли у репозиторій зі збереженням структури папок
 2. **Settings → Pages → Branch: main → / (root) → Save**
 3. Через 1–2 хвилини сайт буде доступний за адресою:
-   `https://YOUR_USERNAME.github.io/meal-planner`
+   `https://kseniiakovalenko.github.io/meal-planner`
 
 ---
 
