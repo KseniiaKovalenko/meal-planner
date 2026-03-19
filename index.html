@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b1c12">
+<title>Меню</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b1c12;--g1:rgba(255,255,255,0.055);--g2:rgba(255,255,255,0.10);--g3:rgba(255,255,255,0.18);
+  --b0:rgba(255,255,255,0.08);--b1:rgba(255,255,255,0.15);--b2:rgba(255,255,255,0.26);
+  --a:#52c278;--al:rgba(82,194,120,0.13);--ab:rgba(82,194,120,0.28);
+  --t1:#fff;--t2:rgba(255,255,255,0.58);--t3:rgba(255,255,255,0.32);
+  --err:#ff6060;--r:16px;--rs:11px;--rp:100px
+}
+html,body{height:100%;background:var(--bg)}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(82,194,120,0.22);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:rgba(82,194,120,0.4)}
+*{scrollbar-width:thin;scrollbar-color:rgba(82,194,120,0.22) transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;font-size:15px;color:var(--t1)}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:430px;margin:0 auto;
+  background:linear-gradient(150deg,#132119 0%,#0b1c12 50%,#091710 100%);position:relative;overflow:hidden}
+#hdr{padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.hlogo{display:flex;align-items:center;gap:10px}
+.hico{width:34px;height:34px;background:var(--al);border:0.5px solid var(--ab);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--a);flex-shrink:0}
+#ht{font-size:20px;font-weight:600;letter-spacing:-.4px}
+.hacts{display:flex;gap:7px}
+.hbtn{background:var(--g2);border:0.5px solid var(--b1);color:var(--t2);width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hbtn:active{opacity:.65}
+#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 14px 90px}
+#nav{flex-shrink:0;display:flex;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(6,14,9,0.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:0.5px solid var(--b0);gap:4px}
+.nb{flex:1;border:none;background:none;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--t3);font-size:10px;border-radius:14px;transition:background .15s,color .15s}
+.nb.on{background:var(--g3);color:var(--a)}
+.tab{display:none}.tab.on{display:block}
+#ov{position:absolute;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:none;align-items:flex-end}
+#ov.on{display:flex}
+#mb{background:linear-gradient(180deg,#162a1e,#0c1c13);border:0.5px solid var(--b0);border-radius:22px 22px 0 0;width:100%;max-height:93%;overflow-y:auto;padding:14px 16px 32px}
+.mh{width:38px;height:4px;background:var(--g3);border-radius:2px;margin:0 auto 16px}
+#fab{position:absolute;bottom:80px;right:14px;width:50px;height:50px;border-radius:50%;background:var(--a);color:#0b1c12;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(82,194,120,0.35);z-index:99}
+#fab:active{transform:scale(.9)}
+#toast{position:absolute;bottom:88px;left:50%;transform:translateX(-50%);background:rgba(8,18,11,0.95);border:0.5px solid var(--b1);color:var(--t1);padding:9px 18px;border-radius:var(--rp);font-size:13px;z-index:400;opacity:0;transition:opacity .22s;pointer-events:none;white-space:nowrap;max-width:90%}
+#toast.on{opacity:1}
+.mt{font-size:17px;font-weight:600;margin-bottom:14px}
+.fg{margin-bottom:12px}
+label{font-size:11px;font-weight:500;color:var(--t3);display:block;margin-bottom:5px;letter-spacing:.4px;text-transform:uppercase}
+input,textarea,select{width:100%;padding:10px 13px;border:0.5px solid var(--b0);border-radius:var(--rs);font-size:14px;font-family:inherit;background:var(--g1);color:var(--t1);-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ab);background:var(--g2)}
+input::placeholder,textarea::placeholder{color:var(--t3)}
+select option{background:#162a1e;color:#fff}
+textarea{resize:vertical;min-height:64px}
+.btn{padding:12px 16px;border-radius:12px;border:0.5px solid var(--b0);font-size:14px;font-weight:500;cursor:pointer;width:100%;background:var(--g1);color:var(--t1);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn:active{opacity:.75}
+.btn+.btn{margin-top:7px}
+.bp{background:var(--a);color:#0b1c12;border-color:var(--a);font-weight:600}
+.bs{background:var(--al);color:var(--a);border-color:var(--ab)}
+.bd{background:rgba(255,96,96,0.1);color:var(--err);border-color:rgba(255,96,96,0.25)}
+.sb{display:flex;align-items:center;background:var(--g1);border:0.5px solid var(--b0);border-radius:var(--rp);padding:0 14px;margin-bottom:12px;color:var(--t3)}
+.sb input{border:none;flex:1;padding:10px 8px;background:transparent;font-size:14px;color:var(--t1);box-shadow:none}
+.sb input:focus{outline:none}
+.sb input::placeholder{color:var(--t3)}
+.chips{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 15px;border-radius:var(--rp);background:var(--g1);border:0.5px solid var(--b0);font-size:12px;cursor:pointer;color:var(--t2);white-space:nowrap;flex-shrink:0}
+.chip.on{background:var(--g3);border-color:var(--b2);color:var(--t1);font-weight:500}
+.rg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rc{background:var(--g1);border:0.5px solid var(--b0);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .1s}
+.rc:active{transform:scale(.95)}
+.rth{height:108px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(82,194,120,0.07);color:rgba(82,194,120,0.4)}
+.rth img{width:100%;height:100%;object-fit:cover}
+.rin{padding:9px 11px 11px}
+.rn{font-weight:500;font-size:13px;margin-bottom:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rm{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center}
+.wn{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;background:var(--g1);border:0.5px solid var(--b0);border-radius:var(--r);padding:9px 13px;gap:6px;flex-wrap:wrap}
+.wc{display:flex;align-items:center;gap:2px}
+.wc>button{background:var(--g2);border:0.5px solid var(--b1);color:var(--t1);border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.wc>span{font-size:13px;font-weight:500;padding:0 8px}
+.pplc{display:flex;align-items:center;gap:5px}
+.pplc button{background:var(--al);border:none;color:var(--a);border-radius:50%;width:26px;height:26px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pplc span{font-size:13px;font-weight:500;min-width:20px;text-align:center}
+.dc{background:var(--g1);border:0.5px solid var(--b0);border-radius:var(--r);padding:11px 13px;margin-bottom:8px}
+.dl{font-weight:600;font-size:13px;margin-bottom:8px;color:var(--a)}
+.ms{display:flex;align-items:center;border:0.5px dashed var(--b0);border-radius:10px;padding:8px 10px;margin-bottom:5px;cursor:pointer;gap:8px;min-height:38px}
+.ms.fi{border-style:solid;border-color:var(--ab);background:var(--al)}
+.msl{font-size:11px;color:var(--t3);width:58px;flex-shrink:0}
+.msn{font-size:12px;font-weight:500;flex:1}
+.msc{color:var(--t3);background:none;border:none;cursor:pointer;display:flex;align-items:center}
+.shdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.sg{margin-bottom:12px}
+.sgt{font-size:11px;font-weight:500;color:var(--t3);margin-bottom:6px;padding-left:2px;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
+.si{display:flex;align-items:center;background:var(--g1);border:0.5px solid var(--b0);border-radius:10px;padding:10px 12px;margin-bottom:4px;gap:10px}
+.si.ck .sin{text-decoration:line-through;color:var(--t3)}
+.si.frp{background:var(--al);border-color:var(--ab)}
+.si input[type=checkbox]{width:18px;height:18px;accent-color:var(--a);flex-shrink:0;cursor:pointer}
+.sin{flex:1;font-size:13px}
+.sia{font-size:12px;color:var(--t2);white-space:nowrap}
+.sdl{color:var(--t3);font-size:15px;border:none;background:none;cursor:pointer;display:flex;align-items:center}
+.pi{display:flex;align-items:center;background:var(--g1);border:0.5px solid var(--b0);border-radius:10px;padding:10px 12px;margin-bottom:5px;gap:10px}
+.pn{flex:1;font-size:13px;font-weight:500}
+.pa{font-size:12px;color:var(--t3)}
+.rdi{width:100%;height:178px;border-radius:14px;background:rgba(82,194,120,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden;border:0.5px solid var(--b0);color:rgba(82,194,120,0.4)}
+.rdi img{width:100%;height:100%;object-fit:cover}
+.mac{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px}
+.mc{background:var(--g1);border:0.5px solid var(--b0);border-radius:10px;padding:8px;text-align:center}
+.mv{font-weight:600;font-size:14px;color:var(--a)}
+.ml{font-size:10px;color:var(--t3)}
+.st{font-weight:600;font-size:14px;margin:13px 0 8px;display:flex;align-items:center;gap:7px}
+.irow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--b0);font-size:13px;gap:8px}
+.irow:last-child{border:none}
+.strow{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start}
+.stnum{background:var(--a);color:#0b1c12;border-radius:50%;width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:2px}
+.sttxt{font-size:13px;line-height:1.55;color:var(--t2);padding-top:2px}
+.tg{display:inline-block;background:var(--al);color:var(--a);border-radius:var(--rp);padding:3px 10px;font-size:11px;margin:2px;border:0.5px solid var(--ab)}
+.tagsw{display:flex;flex-wrap:wrap;gap:5px;max-height:100px;overflow-y:auto;padding:3px 0}
+.ts{padding:5px 12px;border-radius:var(--rp);background:var(--g1);border:0.5px solid var(--b0);font-size:12px;cursor:pointer;color:var(--t2)}
+.ts.on{background:var(--al);border-color:var(--ab);color:var(--a);font-weight:500}
+.srv-adj{display:flex;align-items:center;gap:8px;background:var(--al);border:0.5px solid var(--ab);border-radius:10px;padding:8px 12px;margin-bottom:12px}
+.srv-adj button{background:var(--a);color:#0b1c12;border:none;border-radius:50%;width:28px;height:28px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.srv-adj span{font-size:13px;font-weight:500;flex:1;text-align:center}
+.pp{width:100%;height:108px;border-radius:var(--rs);background:var(--g1);border:0.5px dashed var(--b1);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;margin-bottom:6px;overflow:hidden;cursor:pointer;color:var(--t3);font-size:12px}
+.pp img{width:100%;height:100%;object-fit:cover}
+.ir{display:flex;gap:4px;margin-bottom:5px;align-items:center}
+.ir input:first-child{flex:2;min-width:0}
+.ir input:nth-child(2){flex:1;min-width:0;padding:10px 6px}
+.ir select{flex:1;min-width:0;padding:10px 4px;font-size:12px}
+.ir button{background:none;border:none;font-size:16px;cursor:pointer;color:var(--t3);padding:2px;flex-shrink:0;display:flex;align-items:center}
+.sr{display:flex;gap:6px;margin-bottom:6px;align-items:flex-start}
+.sn{background:var(--a);color:#0b1c12;border-radius:50%;width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:10px}
+.sr textarea{flex:1;min-height:60px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.note{font-size:11px;color:var(--t3);margin-top:4px}
+.autob{background:var(--al);color:var(--a);border:0.5px solid var(--ab);border-radius:var(--rp);padding:4px 10px;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit}
+.empty{text-align:center;padding:44px 20px;color:var(--t3)}
+.ei{margin-bottom:12px;display:flex;justify-content:center;opacity:.5}
+.empty p{line-height:1.7;font-size:14px}
+.divider{height:0.5px;background:var(--b0);margin:12px 0}
+.citem{display:flex;align-items:center;background:var(--g1);border:0.5px solid var(--b0);border-radius:10px;padding:10px 12px;margin-bottom:5px;gap:10px}
+.mfld{display:flex;flex-direction:column;gap:2px}
+.mfld label{text-transform:uppercase}
+.cat-sec{margin-bottom:8px}
+.cat-hdr{font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+</style>
+<body>
+<div id="app">
+  <header id="hdr">
+    <div class="hlogo">
+      <div class="hico" id="hico"></div>
+      <h1 id="ht">Рецепти</h1>
+    </div>
+    <div class="hacts" id="ha"></div>
+  </header>
+  <main id="main">
+    <section id="tab-recipes" class="tab on"></section>
+    <section id="tab-planner" class="tab"></section>
+    <section id="tab-shopping" class="tab"></section>
+    <section id="tab-pantry" class="tab"></section>
+  </main>
+  <nav id="nav">
+    <button class="nb on" onclick="showTab('recipes')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3.5v7"/></svg>
+      <span>Рецепти</span>
+    </button>
+    <button class="nb" onclick="showTab('planner')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span>Планувальник</span>
+    </button>
+    <button class="nb" onclick="showTab('shopping')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.2"/><circle cx="20" cy="21" r="1.2"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+      <span>Покупки</span>
+    </button>
+    <button class="nb" onclick="showTab('pantry')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+      <span>Комора</span>
+    </button>
+  </nav>
+  <div id="ov" onclick="closeMod(event)"><div id="mb"><div class="mh"></div><div id="mc"></div></div></div>
+  <button id="fab" onclick="fabAct()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <div id="toast"></div>
+</div>
+<script>
+// ── Icons ──
+const IP={
+  recipes:`<path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3.5v7"/>`,
+  calendar:`<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>`,
+  cart:`<circle cx="9" cy="21" r="1.2"/><circle cx="20" cy="21" r="1.2"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>`,
+  box:`<rect x="5" y="2" width="14" height="21" rx="2.5"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="9" y1="5" x2="9" y2="7.5"/><line x1="9" y1="13" x2="9" y2="18"/>`,
+  search:`<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>`,
+  chevL:`<path d="M15 18l-6-6 6-6"/>`,chevR:`<path d="M9 18l6-6-6-6"/>`,
+  x:`<path d="M18 6L6 18M6 6l12 12"/>`,
+  edit:`<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>`,
+  trash:`<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>`,
+  link:`<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>`,
+  camera:`<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>`,
+  clock:`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+  flame:`<path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 3z"/>`,
+  users:`<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`,
+  tag:`<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none"/>`,
+  grid:`<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>`,
+  save:`<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>`,
+  check:`<polyline points="20 6 9 17 4 12"/>`,
+  home:`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
+  arrowL:`<path d="M19 12H5M12 5l-7 7 7 7"/>`,
+  zap:`<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>`,
+};
+function ic(n,s=18){return`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">${IP[n]||''}</svg>`}
+
+// ── Constants ──
+const UNITS=['г','кг','мл','л','шт','ч.л.','ст.л.','склянка','пучок','скибка','дрібка','упаковка','порція'];
+const TAGS=['Сніданок','Обід','Вечеря','Перекус','Десерт','Курка','Яловичина','Морепродукти','Свинина','Паста','Салат','Веган','Вегетаріанське','Без глютену','Випічка','Італійська','Мексиканська','Китайська','Середземноморська','Швидко','Улюблені','Здорове'];
+const CATS=['Сніданок','Обід','Вечеря','Перекус','Суп',"М'ясо","Риба",'Випічка','Десерт','Паста','Салат','Овочі','Інше'];
+const MEALS=[{k:'breakfast',l:'Сніданок'},{k:'lunch',l:'Обід'},{k:'dinner',l:'Вечеря'},{k:'snack',l:'Перекус'}];
+const DAYS=[{k:'Mon',n:'Пн'},{k:'Tue',n:'Вт'},{k:'Wed',n:'Ср'},{k:'Thu',n:'Чт'},{k:'Fri',n:'Пт'},{k:'Sat',n:'Сб'},{k:'Sun',n:'Нд'}];
+const PROD_CATS=["Овочі та фрукти","М'ясо та птиця","Риба та морепродукти","Молочне та яйця","Бакалія та крупи","Хліб та випічка","Спеції та приправи","Олії та жири","Консерви","Напої","Заморожені","Снеки","Інше"];
+const PCAT_CLR={"Овочі та фрукти":"#6ab840","М'ясо та птиця":"#c07850","Риба та морепродукти":"#5090c0","Молочне та яйця":"#d4c460","Бакалія та крупи":"#c09840","Хліб та випічка":"#d07838","Спеції та приправи":"#9860c0","Олії та жири":"#b8a030","Консерви":"#80a050","Напої":"#4888d0","Заморожені":"#60b8d0","Снеки":"#d07040","Інше":"#888888"};
+function pcClr(c){return PCAT_CLR[c]||'#888'}
+
+// ── Default products ──
+const DEF_PRODS=[
+  {n:'Паста (суха)',u:'г',cat:'Бакалія та крупи',k:350,p:13,f:1.5,c:71},
+  {n:'Томати',u:'г',cat:"Овочі та фрукти",k:18,p:.9,f:.2,c:3.9},
+  {n:'Базилік свіжий',u:'г',cat:"Овочі та фрукти",k:23,p:3.2,f:.6,c:2.7},
+  {n:'Цибуля ріпчаста',u:'г',cat:"Овочі та фрукти",k:40,p:1.1,f:.1,c:9.3},
+  {n:'Соус песто',u:'г',cat:'Консерви',k:460,p:6,f:47,c:5},
+  {n:'Кисломолочний сир',u:'г',cat:'Молочне та яйця',k:180,p:14,f:9,c:10},
+  {n:'Локшина яєчна',u:'г',cat:'Бакалія та крупи',k:340,p:11,f:1,c:70},
+  {n:'Куряче філе',u:'г',cat:"М'ясо та птиця",k:110,p:24,f:1.5,c:0},
+  {n:'Яловичина (фарш)',u:'г',cat:"М'ясо та птиця",k:254,p:17,f:20,c:0},
+  {n:'Шинка з індички',u:'г',cat:"М'ясо та птиця",k:135,p:17,f:7,c:1},
+  {n:'Рис білий',u:'г',cat:'Бакалія та крупи',k:360,p:7,f:.7,c:78},
+  {n:'Вівсяне борошно',u:'г',cat:'Бакалія та крупи',k:369,p:13,f:6.5,c:66},
+  {n:'Авокадо',u:'г',cat:"Овочі та фрукти",k:160,p:2,f:15,c:9},
+  {n:'Хліб тостовий',u:'г',cat:'Хліб та випічка',k:265,p:8,f:3.5,c:49},
+  {n:'Яйця курячі',u:'шт',cat:'Молочне та яйця',k:155,p:13,f:11,c:1},
+  {n:'Тортилья',u:'г',cat:'Хліб та випічка',k:306,p:8,f:7,c:52},
+  {n:'Квасоля консервована',u:'г',cat:'Консерви',k:99,p:7,f:.4,c:18},
+  {n:'Болгарський перець',u:'г',cat:"Овочі та фрукти",k:27,p:1,f:.3,c:6},
+  {n:'Морква',u:'г',cat:"Овочі та фрукти",k:41,p:.9,f:.2,c:9.6},
+  {n:'Часник',u:'г',cat:"Овочі та фрукти",k:149,p:6.4,f:.5,c:33},
+  {n:'Оливкова олія',u:'мл',cat:'Олії та жири',k:884,p:0,f:100,c:0},
+  {n:'Сир твердий',u:'г',cat:'Молочне та яйця',k:380,p:26,f:30,c:0},
+  {n:'Огірок',u:'г',cat:"Овочі та фрукти",k:16,p:.7,f:.1,c:3.6},
+  {n:'Кукурудза консервована',u:'г',cat:'Консерви',k:86,p:3.3,f:1.2,c:18},
+  {n:'Сметана 20%',u:'г',cat:'Молочне та яйця',k:206,p:2.5,f:20,c:3.4},
+  {n:'Вершкове масло',u:'г',cat:'Молочне та яйця',k:717,p:.9,f:81,c:.6},
+  {n:'Молоко 2.5%',u:'мл',cat:'Молочне та яйця',k:52,p:2.9,f:2.5,c:4.7},
+  {n:'Грецький йогурт',u:'г',cat:'Молочне та яйця',k:59,p:10,f:.4,c:3.6},
+  {n:'Лосось',u:'г',cat:'Риба та морепродукти',k:208,p:20,f:13,c:0},
+  {n:'Тунець консервований',u:'г',cat:'Риба та морепродукти',k:96,p:22,f:1,c:0},
+];
+
+// ── DB ──
+const DBN='MealPlannerPWA';let db;
+async function openDB(){
+  return new Promise((ok,er)=>{
+    const r=indexedDB.open(DBN,4);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      ['recipes','planWeeks','shopItems','pantryItems','products'].forEach(s=>{
+        if(!d.objectStoreNames.contains(s))d.createObjectStore(s,s==='planWeeks'?{keyPath:'wk'}:{keyPath:'id',autoIncrement:true});
+      });
+    };
+    r.onsuccess=async e=>{db=e.target.result;await seedProds();ok(db)};
+    r.onerror=er;
+  });
+}
+async function seedProds(){
+  const ex=await dbAll('products');if(ex.length>0)return;
+  for(const p of DEF_PRODS)await dbPut('products',{name:p.n,unit:p.u,cat:p.cat,kcal:p.k,prot:p.p,fat:p.f,carb:p.c,storeName:null,storeLink:null});
+}
+const os=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
+const dbAll=s=>new Promise((ok,er)=>{const r=os(s).getAll();r.onsuccess=()=>ok(r.result);r.onerror=er});
+const dbGet=(s,k)=>new Promise((ok,er)=>{const r=os(s).get(k);r.onsuccess=()=>ok(r.result);r.onerror=er});
+const dbPut=(s,d)=>new Promise((ok,er)=>{const r=os(s,'readwrite').put(d);r.onsuccess=()=>ok(r.result);r.onerror=er});
+const dbDel=(s,k)=>new Promise((ok,er)=>{const r=os(s,'readwrite').delete(k);r.onsuccess=()=>ok(r.result);r.onerror=er});
+
+// ── State ──
+let curTab='recipes',wkOff=0,fCat='all',fQ='';
+
+// ── Helpers ──
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
+function openMod(h){document.getElementById('mc').innerHTML=h;document.getElementById('ov').classList.add('on')}
+function closeMod(e){if(!e||e.target===document.getElementById('ov'))document.getElementById('ov').classList.remove('on')}
+function confirm2(msg,cb){window._cb=cb;openMod(`<div class="mt">Підтвердження</div><p style="color:var(--t2);font-size:14px;margin-bottom:16px">${msg}</p><button class="btn bd" onclick="window._cb&&window._cb();closeMod()">${ic('trash',16)} Підтвердити</button><button class="btn" onclick="closeMod()">Скасувати</button>`)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function srvLabel(n){return n===1?'порція':n<5?'порції':'порцій'}
+function fmtAmt(a){if(!a)return '';const n=parseFloat(a);if(isNaN(n))return '';return n%1===0?n:parseFloat(n.toFixed(2))}
+function getMon(off=0){const d=new Date();const day=d.getDay()||7;d.setDate(d.getDate()-day+1+off*7);d.setHours(0,0,0,0);return d}
+function wkKey(off=0){return getMon(off).toISOString().split('T')[0]}
+function wkDates(off=0){const m=getMon(off);return DAYS.map(({k,n},i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return{k,n,d:d.getDate(),mo:d.getMonth()+1}})}
+function uSel(val,di){return`<select id="usel_${di}" onchange="updIng(${di},'u',this.value)">${UNITS.map(u=>`<option${u===(val||'г')?' selected':''}>${u}</option>`).join('')}</select>`}
+
+// ── Nav ──
+const HDR_ICO={recipes:'recipes',planner:'calendar',shopping:'cart',pantry:'box'};
+const HDR_LBL={recipes:'Рецепти',planner:'Планувальник',shopping:'Список покупок',pantry:'Комора'};
+function showTab(tab){
+  curTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+tab).classList.add('on');
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',['recipes','planner','shopping','pantry'][i]===tab));
+  document.getElementById('ht').textContent=HDR_LBL[tab];
+  document.getElementById('hico').innerHTML=ic(HDR_ICO[tab],16);
+  document.getElementById('fab').style.display=tab==='planner'?'none':'flex';
+  document.getElementById('ha').innerHTML='';
+  render(tab);
+}
+async function render(tab){
+  if(tab==='recipes')await renderRec();
+  else if(tab==='planner')await renderPlan();
+  else if(tab==='shopping')await renderShop();
+  else if(tab==='pantry')await renderPantry();
+}
+function fabAct(){
+  if(curTab==='recipes')showRForm();
+  else if(curTab==='shopping')showAddShop();
+  else if(curTab==='pantry')showAddPantry();
+}
+
+// ══════ RECIPES ══════
+async function renderRec(){
+  const el=document.getElementById('tab-recipes');
+  const rs=await dbAll('recipes');
+  const allTags=['all',...new Set(rs.flatMap(r=>[r.cat,...(r.tags||[])]).filter(Boolean))];
+  let fl=[...rs];
+  if(fCat!=='all')fl=fl.filter(r=>r.cat===fCat||(r.tags||[]).includes(fCat));
+  if(fQ)fl=fl.filter(r=>r.name.toLowerCase().includes(fQ.toLowerCase()));
+  const chips=allTags.slice(0,14).map(c=>`<button class="chip${c===fCat?' on':''}" data-c="${esc(c)}" onclick="setCat(this.dataset.c)">${c==='all'?'Всі':c}</button>`).join('');
+  const cards=fl.length?`<div class="rg">${fl.map(r=>`<div class="rc" onclick="showRec(${r.id})">
+    <div class="rth">${r.photo?`<img src="${r.photo}">`:`${ic('recipes',30)}`}</div>
+    <div class="rin"><div class="rn">${esc(r.name)}</div>
+    <div class="rm">${r.time?`${ic('clock',12)} ${r.time}хв`:''}${r.cal?`&nbsp;${ic('flame',11)} ${r.cal}`:''}</div>
+    </div></div>`).join('')}</div>`:
+    `<div class="empty"><div class="ei">${ic('recipes',44)}</div><p>Рецептів ще немає.<br>Натисніть + щоб додати</p></div>`;
+  el.innerHTML=`<div class="sb">${ic('search',16)}<input placeholder="Пошук рецептів..." value="${esc(fQ)}" oninput="fQ=this.value;renderRec()"></div><div class="chips">${chips}</div>${cards}`;
+}
+function setCat(c){fCat=c;renderRec()}
+
+async function showRec(id){
+  const r=await dbGet('recipes',id);if(!r)return;
+  window._viewSrv=r.srv||1;window._viewRec=r;_drawRec();
+}
+function _drawRec(){
+  const r=window._viewRec,vs=window._viewSrv,bs=r.srv||1,sc=vs/bs;
+  const img=r.photo?`<div class="rdi"><img src="${r.photo}"></div>`:`<div class="rdi">${ic('recipes',52)}</div>`;
+  const mac=(r.cal||r.pro||r.fat||r.carb)?`<div class="mac">
+    ${r.cal?`<div class="mc"><div class="mv">${Math.round(r.cal*sc)}</div><div class="ml">ккал</div></div>`:''}
+    ${r.pro?`<div class="mc"><div class="mv">${fmtAmt(r.pro*sc)}</div><div class="ml">білки</div></div>`:''}
+    ${r.fat?`<div class="mc"><div class="mv">${fmtAmt(r.fat*sc)}</div><div class="ml">жири</div></div>`:''}
+    ${r.carb?`<div class="mc"><div class="mv">${fmtAmt(r.carb*sc)}</div><div class="ml">вугл.</div></div>`:''}
+  </div>`:'';
+  const ings=(r.ings||[]).map(i=>`<div class="irow"><span style="color:var(--t2)">${esc(i.n)}</span><span>${i.a?fmtAmt(parseFloat(i.a)*sc):''} ${i.u||''}</span></div>`).join('');
+  const steps=(r.steps||[]).map((s,i)=>`<div class="strow"><div class="stnum">${i+1}</div><div class="sttxt">${esc(s)}</div></div>`).join('');
+  const tags=[(r.cat||''),(r.tags||[])].flat().filter(Boolean).map(t=>`<span class="tg">${esc(t)}</span>`).join('');
+  openMod(`${img}
+    <div class="mt" style="margin-bottom:5px">${esc(r.name)}</div>
+    ${r.link?`<a href="${esc(r.link)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--a);font-size:13px;text-decoration:none;margin-bottom:10px">${ic('link',14)} Переглянути рецепт</a><br>`:''}
+    <div style="margin-bottom:10px">${tags}</div>
+    <div class="srv-adj"><button onclick="adjSrv(-1)">&minus;</button><span>${ic('users',14)}&nbsp; ${vs} ${srvLabel(vs)}</span><button onclick="adjSrv(1)">+</button></div>
+    ${mac}
+    ${r.time||bs?`<p style="font-size:12px;color:var(--t3);margin-bottom:10px">${r.time?`${ic('clock',12)} ${r.time} хв`:''}${bs?` &nbsp; ${ic('users',12)} базово ${bs} ${srvLabel(bs)}`:''}</p>`:''}
+    ${ings?`<div class="st">${ic('tag',16)} Інгредієнти</div>${ings}`:''}
+    ${steps?`<div class="st">${ic('clock',16)} Кроки</div>${steps}`:''}
+    <div style="height:14px"></div>
+    <button class="btn bs" onclick="showRForm(${r.id})">${ic('edit',16)} Редагувати</button>
+    <button class="btn bd" onclick="delRec(${r.id})">${ic('trash',16)} Видалити</button>`);
+}
+function adjSrv(d){window._viewSrv=Math.max(1,window._viewSrv+d);_drawRec()}
+async function delRec(id){confirm2('Видалити цей рецепт?',async()=>{await dbDel('recipes',id);closeMod();renderRec();toast('Рецепт видалено')})}
+
+async function showRForm(id=null){
+  const r=id?await dbGet('recipes',id):null;
+  window._prods=await dbAll('products');
+  window._fd={id:r?.id,name:r?.name||'',cat:r?.cat||'',time:r?.time||'',srv:r?.srv||'',
+    cal:r?.cal||'',pro:r?.pro||'',fat:r?.fat||'',carb:r?.carb||'',link:r?.link||'',
+    tags:r?.tags?[...r.tags]:[],photo:r?.photo||null,
+    ings:r?.ings?.length?JSON.parse(JSON.stringify(r.ings)):[{n:'',a:'',u:'г',pid:null}],
+    steps:r?.steps?.length?[...r.steps]:['']};
+  const pdl=`<datalist id="pdl">${window._prods.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>`;
+  openMod(`${pdl}<div class="mt">${id?'Редагувати':'Новий'} рецепт</div>
+    <div class="fg"><label>Фото</label>
+      <div class="pp" id="pp" onclick="document.getElementById('pf').click()">${r?.photo?`<img src="${r.photo}">`:`${ic('camera',24)}<span>Додати фото</span>`}</div>
+      <input type="file" id="pf" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+    </div>
+    <div class="fg"><label>Назва *</label><input placeholder="Назва рецепту" value="${esc(r?.name||'')}" oninput="window._fd.name=this.value"></div>
+    <div class="fg"><label>Категорія</label><select onchange="window._fd.cat=this.value"><option value="">Оберіть...</option>${CATS.map(c=>`<option value="${c}"${r?.cat===c?' selected':''}>${c}</option>`).join('')}</select></div>
+    <div class="fg"><label>Теги</label><div class="tagsw">${TAGS.map(t=>`<button class="ts${(window._fd.tags||[]).includes(t)?' on':''}" data-t="${esc(t)}" onclick="togTag(this.dataset.t,this)">${esc(t)}</button>`).join('')}</div></div>
+    <div class="g2">
+      <div class="fg"><label>Час (хв)</label><input type="number" placeholder="30" value="${esc(r?.time||'')}" oninput="window._fd.time=this.value" min="0"></div>
+      <div class="fg"><label>Порцій</label><input type="number" placeholder="4" value="${esc(r?.srv||'')}" oninput="window._fd.srv=this.value" min="1"></div>
+    </div>
+    <div class="fg">
+      <label>КБЖВ (на 1 порцію)</label>
+      <div class="g4">
+        <div class="mfld"><label>ккал</label><input id="cal_in" type="number" placeholder="0" value="${esc(r?.cal||'')}" oninput="window._fd.cal=this.value" min="0"></div>
+        <div class="mfld"><label>білки г</label><input type="number" placeholder="0" value="${esc(r?.pro||'')}" oninput="window._fd.pro=this.value" min="0"></div>
+        <div class="mfld"><label>жири г</label><input type="number" placeholder="0" value="${esc(r?.fat||'')}" oninput="window._fd.fat=this.value" min="0"></div>
+        <div class="mfld"><label>вугл. г</label><input type="number" placeholder="0" value="${esc(r?.carb||'')}" oninput="window._fd.carb=this.value" min="0"></div>
+      </div>
+      <div class="note"><button class="autob" onclick="autoCalc()">${ic('zap',12)} Авто з інгредієнтів</button></div>
+    </div>
+    <div class="fg"><label>Посилання на рецепт</label><input type="url" placeholder="https://..." value="${esc(r?.link||'')}" oninput="window._fd.link=this.value"></div>
+    <div class="fg"><label>Інгредієнти</label><div id="ic"></div><button class="btn bs" style="margin-top:6px" onclick="addIng()">${ic('tag',15)} Додати інгредієнт</button></div>
+    <div class="fg"><label>Кроки приготування</label><div id="sc"></div><button class="btn bs" style="margin-top:6px" onclick="addStep()">${ic('clock',15)} Додати крок</button></div>
+    <button class="btn bp" onclick="saveRec()">${ic('save',16)} Зберегти</button>
+    <button class="btn" onclick="closeMod()">Скасувати</button>`);
+  renderIngs();renderSteps();
+}
+function togTag(t,el){const i=window._fd.tags.indexOf(t);if(i>=0)window._fd.tags.splice(i,1);else window._fd.tags.push(t);el.classList.toggle('on')}
+function updIng(i,k,v){if(window._fd.ings[i])window._fd.ings[i][k]=v}
+function chkProd(i,v){
+  const p=(window._prods||[]).find(p=>p.name.toLowerCase()===v.toLowerCase());
+  if(p){window._fd.ings[i].pid=p.id;const s=document.getElementById(`usel_${i}`);if(s&&p.unit){s.value=p.unit;window._fd.ings[i].u=p.unit}}
+  else window._fd.ings[i].pid=null;
+}
+function renderIngs(){
+  document.getElementById('ic').innerHTML=window._fd.ings.map((g,i)=>`
+    <div class="ir"><input list="pdl" placeholder="Продукт" value="${esc(g.n||'')}" oninput="updIng(${i},'n',this.value);chkProd(${i},this.value)">
+    <input type="number" placeholder="К-сть" value="${g.a||''}" oninput="updIng(${i},'a',this.value)" step="0.01" min="0">
+    ${uSel(g.u,i)}
+    <button onclick="rmIng(${i})">${ic('x',16)}</button></div>`).join('');
+}
+function renderSteps(){
+  document.getElementById('sc').innerHTML=window._fd.steps.map((s,i)=>`
+    <div class="sr"><div class="sn">${i+1}</div>
+    <textarea placeholder="Опис кроку..." oninput="window._fd.steps[${i}]=this.value">${esc(s||'')}</textarea>
+    <button onclick="rmStep(${i})" style="margin-top:8px;background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center">${ic('x',16)}</button></div>`).join('');
+}
+function addIng(){window._fd.ings.push({n:'',a:'',u:'г',pid:null});renderIngs()}
+function rmIng(i){window._fd.ings.splice(i,1);renderIngs()}
+function addStep(){window._fd.steps.push('');renderSteps()}
+function rmStep(i){window._fd.steps.splice(i,1);renderSteps()}
+function handlePhoto(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=e=>{window._fd.photo=e.target.result;document.getElementById('pp').innerHTML=`<img src="${e.target.result}">`};rd.readAsDataURL(f)}
+async function autoCalc(){
+  const prods=window._prods||await dbAll('products');
+  const pid={};prods.forEach(p=>pid[p.id]=p);const pnm={};prods.forEach(p=>pnm[p.name.toLowerCase()]=p);
+  const srv=parseInt(window._fd.srv)||1;
+  let kc=0,pr=0,ft=0,cb=0,has=false;
+  for(const ing of window._fd.ings){
+    const p=ing.pid?pid[ing.pid]:pnm[(ing.n||'').toLowerCase()];
+    if(!p?.kcal||!ing.a)continue;
+    const a=parseFloat(ing.a)||0;
+    let g=ing.u==='г'?a:ing.u==='кг'?a*1000:ing.u==='мл'?a:ing.u==='л'?a*1000:0;
+    if(!g)continue;
+    kc+=g*p.kcal/100;pr+=g*(p.prot||0)/100;ft+=g*(p.fat||0)/100;cb+=g*(p.carb||0)/100;has=true;
+  }
+  if(!has){toast('Вкажіть КБЖВ у каталозі продуктів');return}
+  window._fd.cal=Math.round(kc/srv);window._fd.pro=Math.round(pr/srv);window._fd.fat=Math.round(ft/srv);window._fd.carb=Math.round(cb/srv);
+  const ins=document.querySelectorAll('#mc .g4 input');
+  if(ins[0])ins[0].value=window._fd.cal;if(ins[1])ins[1].value=window._fd.pro;
+  if(ins[2])ins[2].value=window._fd.fat;if(ins[3])ins[3].value=window._fd.carb;
+  toast(`${window._fd.cal} ккал · Б${window._fd.pro} Ж${window._fd.fat} В${window._fd.carb} ✓`);
+}
+async function saveRec(){
+  const fd=window._fd;if(!fd.name.trim()){toast('Введіть назву');return}
+  const rec={name:fd.name.trim(),cat:fd.cat,time:fd.time?+fd.time:null,srv:fd.srv?+fd.srv:null,
+    cal:fd.cal?+fd.cal:null,pro:fd.pro?+fd.pro:null,fat:fd.fat?+fd.fat:null,carb:fd.carb?+fd.carb:null,
+    tags:fd.tags,photo:fd.photo,link:fd.link||null,
+    ings:fd.ings.filter(i=>i.n.trim()),steps:fd.steps.filter(s=>s.trim())};
+  if(fd.id)rec.id=fd.id;
+  await dbPut('recipes',rec);closeMod();renderRec();toast(fd.id?'Рецепт оновлено':'Рецепт додано');
+}
+
+// ══════ PLANNER ══════
+async function renderPlan(){
+  const el=document.getElementById('tab-planner');
+  const wk=wkKey(wkOff);const dates=wkDates(wkOff);
+  const plan=await dbGet('planWeeks',wk)||{wk,days:{},people:2};
+  window._curPpl=plan.people||2;
+  const rs=await dbAll('recipes');const rm={};rs.forEach(r=>rm[r.id]=r);
+  const fd=dates[0],ld=dates[6];
+  const wlbl=`${fd.d}.${String(fd.mo).padStart(2,'0')} – ${ld.d}.${String(ld.mo).padStart(2,'0')}`;
+  const days=dates.map(d=>{
+    const dp=plan.days[d.k]||{};
+    const meals=MEALS.map(m=>{const r=dp[m.k]?rm[dp[m.k]]:null;
+      return `<div class="ms${r?' fi':''}" onclick="openMP('${wk}','${d.k}','${m.k}')">
+        <span class="msl">${m.l}</span><span class="msn">${r?esc(r.name):`<span style="color:var(--t3);font-size:11px">Не задано</span>`}</span>
+        ${r?`<button class="msc" onclick="clrM(event,'${wk}','${d.k}','${m.k}')">${ic('x',14)}</button>`:''}
+      </div>`;}).join('');
+    return `<div class="dc"><div class="dl">${d.n} <span style="font-weight:400;color:var(--t3);font-size:12px">${d.d}.${String(d.mo).padStart(2,'0')}</span></div>${meals}</div>`;
+  }).join('');
+  el.innerHTML=`<div class="wn">
+    <div class="wc"><button onclick="chWk(-1)">${ic('chevL',16)}</button><span>${wlbl}</span><button onclick="chWk(1)">${ic('chevR',16)}</button></div>
+    <div class="pplc">${ic('users',14)}<button onclick="chPpl(-1)">&minus;</button><span>${window._curPpl}</span><button onclick="chPpl(1)">+</button></div>
+  </div>${days}
+  <button class="btn bp" style="margin-top:4px" onclick="genShop()">${ic('cart',16)} Генерувати список покупок</button>`;
+}
+function chWk(d){wkOff+=d;renderPlan()}
+async function chPpl(d){const wk=wkKey(wkOff);let p=await dbGet('planWeeks',wk)||{wk,days:{},people:2};p.people=Math.max(1,Math.min(20,(p.people||2)+d));await dbPut('planWeeks',p);renderPlan()}
+async function openMP(wk,dk,mk){
+  const rs=await dbAll('recipes');if(!rs.length){toast('Спочатку додайте рецепти');return}
+  window._mprs=rs;window._mpp={wk,dk,mk};
+  openMod(`<div class="mt">Обрати рецепт</div>
+    <div class="sb">${ic('search',16)}<input placeholder="Пошук..." oninput="filtMP(this.value)"></div>
+    <div id="mpl">${mpList(rs)}</div>`);
+}
+function mpList(rs){const{wk,dk,mk}=window._mpp||{};
+  return rs.length?rs.map(r=>`<div class="pi" style="cursor:pointer" onclick="assM('${wk}','${dk}','${mk}',${r.id})">
+    <div style="color:var(--a)">${ic('recipes',20)}</div><span class="pn">${esc(r.name)}</span>
+    ${r.cal?`<span class="pa">${ic('flame',11)} ${r.cal}</span>`:''}
+  </div>`).join(''):'<div class="empty" style="padding:20px"><p>Нічого не знайдено</p></div>';
+}
+function filtMP(q){const fl=(window._mprs||[]).filter(r=>r.name.toLowerCase().includes(q.toLowerCase()));document.getElementById('mpl').innerHTML=mpList(fl)}
+async function assM(wk,dk,mk,rid){let p=await dbGet('planWeeks',wk)||{wk,days:{},people:2};if(!p.days[dk])p.days[dk]={};p.days[dk][mk]=rid;await dbPut('planWeeks',p);closeMod();renderPlan()}
+async function clrM(e,wk,dk,mk){e.stopPropagation();let p=await dbGet('planWeeks',wk);if(p?.days?.[dk]){delete p.days[dk][mk];await dbPut('planWeeks',p);renderPlan()}}
+async function genShop(){
+  const wk=wkKey(wkOff);const plan=await dbGet('planWeeks',wk);
+  if(!plan||!Object.keys(plan.days||{}).length){toast('План порожній');return}
+  const ppl=plan.people||2;
+  const rs=await dbAll('recipes');const rm={};rs.forEach(r=>rm[r.id]=r);
+  const prods=await dbAll('products');const pnm={};prods.forEach(p=>pnm[p.name.toLowerCase()]=p);
+  const pantry=await dbAll('pantryItems');const pantrySet=new Set(pantry.map(p=>p.name.toLowerCase()));
+  const im={};
+  for(const dk of Object.keys(plan.days))for(const mk of Object.keys(plan.days[dk])){
+    const r=rm[plan.days[dk][mk]];if(!r)continue;
+    const sc=ppl/(r.srv||1);
+    (r.ings||[]).forEach(ing=>{
+      if(!ing.n)return;const key=ing.n.toLowerCase();const prod=pnm[key];
+      const inP=pantrySet.has(key);
+      if(!im[key])im[key]={name:ing.n,amt:0,unit:ing.u||'',
+        cat:prod?.cat||'Інше',fromPantry:inP,storeLink:prod?.storeLink||null,storeName:prod?.storeName||null};
+      im[key].amt+=(parseFloat(ing.a)||0)*sc;
+    });
+  }
+  const ex=await dbAll('shopItems');for(const it of ex.filter(i=>!i.manual))await dbDel('shopItems',it.id);
+  const keys=Object.keys(im);if(!keys.length){showTab('shopping');toast('Немає інгредієнтів');return}
+  for(const k of keys){const i=im[k];await dbPut('shopItems',{name:i.name,amt:i.amt?parseFloat(i.amt.toFixed(2)):null,unit:i.unit,cat:i.cat,chk:i.fromPantry,manual:false,fromPantry:i.fromPantry,storeLink:i.storeLink,storeName:i.storeName})}
+  showTab('shopping');toast(`Додано ${keys.length} позицій (${ppl} осіб)`);
+}
+
+// ══════ SHOPPING ══════
+async function renderShop(){
+  const el=document.getElementById('tab-shopping');
+  const items=await dbAll('shopItems');
+  const total=items.length,done=items.filter(i=>i.chk).length;
+  const grps={};items.forEach(i=>{const c=i.cat||'Інше';if(!grps[c])grps[c]=[];grps[c].push(i)});
+  const gHtml=Object.keys(grps).sort().map(cat=>`<div class="sg">
+    <div class="sgt"><span class="cdot" style="background:${pcClr(cat)}"></span>${esc(cat)}</div>
+    ${grps[cat].map(i=>`<div class="si${i.chk?' ck':''}${i.fromPantry?' frp':''}">
+      <input type="checkbox" ${i.chk?'checked':''} onchange="togShop(${i.id},this.checked)">
+      <span class="sin">${esc(i.name)}${i.fromPantry?` <span style="color:var(--a);font-size:10px">${ic('home',11)}</span>`:''}</span>
+      <span class="sia">${i.amt?i.amt+' ':''}${i.unit||''}</span>
+      ${i.storeLink?`<a href="${esc(i.storeLink)}" target="_blank" style="color:var(--a);display:flex;align-items:center">${ic('link',15)}</a>`:''}
+      <button class="sdl" onclick="delShop(${i.id})">${ic('x',15)}</button>
+    </div>`).join('')}
+  </div>`).join('')||`<div class="empty"><div class="ei">${ic('cart',44)}</div><p>Список порожній.<br>Генеруйте зі плану або додайте +</p></div>`;
+  el.innerHTML=`<div class="shdr">
+    <span style="font-size:13px;color:var(--t3)">${total?`${done} / ${total} куплено`:''}</span>
+    <div style="display:flex;gap:6px">
+      ${done>0?`<button class="chip" onclick="clrChk()">Куплено ${ic('check',13)}</button>`:''}
+      ${total?`<button class="chip" onclick="clrAll()">Очистити</button>`:''}
+    </div>
+  </div>
+  ${total>0&&done===total?`<div style="text-align:center;padding:10px;color:var(--a);font-weight:600;font-size:15px">Все куплено!</div>`:''}
+  ${gHtml}
+  ${items.some(i=>i.fromPantry)?`<p style="font-size:11px;color:var(--t3);padding:4px 2px;display:flex;align-items:center;gap:4px">${ic('home',12)} є в коморі (відмічено автоматично)</p>`:''}`;
+}
+async function togShop(id,v){const i=await dbGet('shopItems',id);if(i){i.chk=v;await dbPut('shopItems',i);renderShop()}}
+async function delShop(id){await dbDel('shopItems',id);renderShop()}
+async function clrChk(){const its=await dbAll('shopItems');for(const i of its.filter(i=>i.chk&&!i.fromPantry))await dbDel('shopItems',i.id);renderShop();toast('Куплені видалено')}
+function clrAll(){confirm2('Очистити весь список покупок?',async()=>{const its=await dbAll('shopItems');for(const i of its)await dbDel('shopItems',i.id);renderShop()})}
+function showAddShop(){
+  openMod(`<div class="mt">Додати товар</div>
+    <div class="fg"><label>Назва *</label><input id="sin" placeholder="Молоко"></div>
+    <div class="g2">
+      <div class="fg"><label>Кількість</label><input id="sia" type="number" placeholder="1" min="0"></div>
+      <div class="fg"><label>Одиниця</label><select id="siu">${UNITS.map(u=>`<option>${u}</option>`).join('')}</select></div>
+    </div>
+    <div class="fg"><label>Категорія</label><select id="sic">${PROD_CATS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <button class="btn bp" onclick="addShop()">${ic('check',16)} Додати</button>`);
+  setTimeout(()=>document.getElementById('sin')?.focus(),100);
+}
+async function addShop(){
+  const n=document.getElementById('sin').value.trim();if(!n){toast('Введіть назву');return}
+  await dbPut('shopItems',{name:n,amt:document.getElementById('sia').value||null,unit:document.getElementById('siu').value,cat:document.getElementById('sic').value||'Інше',chk:false,manual:true,fromPantry:false,storeLink:null});
+  closeMod();renderShop();toast('Додано до списку');
+}
+
+// ══════ PANTRY ══════
+async function renderPantry(){
+  const el=document.getElementById('tab-pantry');
+  const items=await dbAll('pantryItems');window._pi=items;
+  const cnt=(await dbAll('products')).length;
+  el.innerHTML=`<button class="btn bs" style="margin-bottom:12px" onclick="showCatalog()">${ic('grid',16)} Каталог продуктів (${cnt})</button>
+    <div class="sb">${ic('search',16)}<input placeholder="Пошук в коморі..." oninput="filtPan(this.value)"></div>
+    <div id="pl">${panList(items)}</div>`;
+}
+function panList(items){return items.length?items.map(i=>`<div class="pi">
+  <div style="color:var(--a)">${ic('box',18)}</div><span class="pn">${esc(i.name)}</span>
+  <span class="pa">${i.amt?i.amt+' ':''}${i.unit||''}</span>
+  <button style="background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center" onclick="delPan(${i.id})">${ic('x',16)}</button>
+</div>`).join(''):`<div class="empty" style="padding:32px"><div class="ei">${ic('home',44)}</div><p>Комора порожня.</p></div>`}
+function filtPan(q){const fl=(window._pi||[]).filter(i=>i.name.toLowerCase().includes(q.toLowerCase()));document.getElementById('pl').innerHTML=panList(fl)}
+async function delPan(id){await dbDel('pantryItems',id);renderPantry();toast('Видалено з комори')}
+function showAddPantry(){
+  openMod(`<div class="mt">Додати до комори</div>
+    <div class="fg"><label>Назва *</label><input id="pin" placeholder="Рис"></div>
+    <div class="g2">
+      <div class="fg"><label>Кількість</label><input id="pia" type="number" placeholder="500" min="0"></div>
+      <div class="fg"><label>Одиниця</label><select id="piu">${UNITS.map(u=>`<option>${u}</option>`).join('')}</select></div>
+    </div>
+    <button class="btn bp" onclick="addPan()">${ic('check',16)} Додати до комори</button>`);
+  setTimeout(()=>document.getElementById('pin')?.focus(),100);
+}
+async function addPan(){
+  const n=document.getElementById('pin').value.trim();if(!n){toast('Введіть назву');return}
+  await dbPut('pantryItems',{name:n,amt:document.getElementById('pia').value||null,unit:document.getElementById('piu').value});
+  closeMod();renderPantry();toast('Додано до комори');
+}
+
+// ══════ PRODUCTS CATALOG ══════
+async function showCatalog(filterCat=null){
+  const prods=await dbAll('products');
+  const grps={};prods.forEach(p=>{const c=p.cat||'Інше';if(!grps[c])grps[c]=[];grps[c].push(p)});
+  const catFilter=PROD_CATS.filter(c=>grps[c]);
+  const catChips=`<div class="chips" style="margin-bottom:10px">
+    <button class="chip${!filterCat?' on':''}" onclick="showCatalog(null)">Всі</button>
+    ${catFilter.map(c=>`<button class="chip${filterCat===c?' on':''}" onclick="showCatalog('${esc(c)}')" style="display:flex;align-items:center;gap:5px"><span class="cdot" style="background:${pcClr(c)}"></span>${esc(c)}</button>`).join('')}
+  </div>`;
+  const filteredGrps=filterCat?{[filterCat]:grps[filterCat]||[]}:grps;
+  const html=Object.keys(filteredGrps).sort().map(cat=>filteredGrps[cat]?.length?`
+    <div class="cat-sec">
+      <div class="cat-hdr"><span class="cdot" style="background:${pcClr(cat)}"></span>${esc(cat)}</div>
+      ${filteredGrps[cat].map(p=>`<div class="citem">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:500;font-size:13px">${esc(p.name)}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">${p.unit||'г'} · ${p.kcal||0} ккал · Б${p.prot||0} Ж${p.fat||0} В${p.carb||0}${p.storeName?' · '+esc(p.storeName):''}</div>
+        </div>
+        ${p.storeLink?`<a href="${esc(p.storeLink)}" target="_blank" style="color:var(--a);display:flex;align-items:center">${ic('link',16)}</a>`:''}
+        <button onclick="showProdForm(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center">${ic('edit',16)}</button>
+        <button onclick="delProduct(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center">${ic('x',16)}</button>
+      </div>`).join('')}
+    </div>`:'').join('')||`<div class="empty" style="padding:24px"><p>Порожньо</p></div>`;
+  openMod(`<div class="mt">${ic('grid',18)} Каталог продуктів</div>
+    <button class="btn bs" style="margin-bottom:10px" onclick="showProdForm()">${ic('tag',16)} Новий продукт</button>
+    ${catChips}${html}`);
+}
+async function showProdForm(id=null){
+  const p=id?await dbGet('products',id):null;
+  openMod(`<div class="mt">${p?'Редагувати':'Новий'} продукт</div>
+    <div class="fg"><label>Назва *</label><input id="pn" placeholder="Куряче філе" value="${esc(p?.name||'')}"></div>
+    <div class="g2">
+      <div class="fg"><label>Одиниця</label><select id="pu">${UNITS.map(u=>`<option${u===(p?.unit||'г')?' selected':''}>${u}</option>`).join('')}</select></div>
+      <div class="fg"><label>Категорія</label><select id="pc">${PROD_CATS.map(c=>`<option${c===(p?.cat||'Інше')?' selected':''}>${c}</option>`).join('')}</select></div>
+    </div>
+    <div class="fg">
+      <label>КБЖВ / 100г</label>
+      <div class="g4">
+        <div class="mfld"><label>ккал</label><input id="pkc" type="number" placeholder="0" value="${p?.kcal||''}" min="0"></div>
+        <div class="mfld"><label>білки г</label><input id="ppr" type="number" placeholder="0" value="${p?.prot||''}" min="0"></div>
+        <div class="mfld"><label>жири г</label><input id="pft" type="number" placeholder="0" value="${p?.fat||''}" min="0"></div>
+        <div class="mfld"><label>вугл. г</label><input id="pcb" type="number" placeholder="0" value="${p?.carb||''}" min="0"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p style="font-size:12px;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;gap:6px">${ic('link',13)} Де купити</p>
+    <div class="fg"><label>Магазин</label><input id="psn" placeholder="Сільпо, АТБ..." value="${esc(p?.storeName||'')}"></div>
+    <div class="fg"><label>Посилання</label><input id="psl" type="url" placeholder="https://..." value="${esc(p?.storeLink||'')}"></div>
+    <button class="btn bp" onclick="saveProduct(${p?.id??'null'})">${ic('save',16)} Зберегти</button>
+    <button class="btn" onclick="showCatalog()">Назад до каталогу</button>`);
+  setTimeout(()=>document.getElementById('pn')?.focus(),100);
+}
+async function saveProduct(id){
+  const n=document.getElementById('pn').value.trim();if(!n){toast('Введіть назву');return}
+  const p={name:n,unit:document.getElementById('pu').value,cat:document.getElementById('pc').value,
+    kcal:document.getElementById('pkc').value?+document.getElementById('pkc').value:null,
+    prot:document.getElementById('ppr').value?+document.getElementById('ppr').value:null,
+    fat:document.getElementById('pft').value?+document.getElementById('pft').value:null,
+    carb:document.getElementById('pcb').value?+document.getElementById('pcb').value:null,
+    storeName:document.getElementById('psn').value.trim()||null,
+    storeLink:document.getElementById('psl').value.trim()||null};
+  if(id&&id!==null&&id!=='null')p.id=id;
+  await dbPut('products',p);window._prods=await dbAll('products');showCatalog();toast('Збережено');
+}
+async function delProduct(id){confirm2('Видалити продукт?',async()=>{await dbDel('products',id);showCatalog();toast('Видалено')})}
+
+// ── PWA ──
+function addManifest(){
+  const m={name:'Планувальник їжі',short_name:'Меню',start_url:'.',display:'standalone',
+    background_color:'#0b1c12',theme_color:'#0b1c12',
+    icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230b1c12'/%3E%3Cpath d='M56 40v56c0 8.8 7.2 16 16 16h16a16 16 0 0 0 16-16V40M80 40v144M152 120V40a40 40 0 0 0-40 40v48h28v56' stroke='%2352c278' stroke-width='12' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+  const b=new Blob([JSON.stringify(m)],{type:'application/json'});
+  const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);
+  document.head.appendChild(l);
+}
+
+// ── Init ──
+openDB().then(()=>{
+  addManifest();
+  document.getElementById('hico').innerHTML=ic('recipes',16);
+  render('recipes');
+}).catch(console.error);
+</script>
