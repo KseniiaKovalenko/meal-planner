@@ -14,13 +14,13 @@ async function renderPlan() {
         <span class="msn">${r?esc(r.name):`<span style="color:var(--t3);font-size:11px">Не задано</span>`}</span>
         ${r?`<button class="msc" onclick="clrM(event,'${wk}','${d.k}','${m.k}')">${ic('x',14)}</button>`:''}
       </div>`;}).join('');
-    return `<div class="dc"><div class="dl">${d.n} <span style="font-weight:400;color:var(--t3);font-size:12px">${d.d}.${String(d.mo).padStart(2,'0')}</span></div>${meals}</div>`;
+    return `<div class="dc plan-day"><div class="dl">${d.n} <span style="font-weight:400;color:var(--t3);font-size:12px">${d.d}.${String(d.mo).padStart(2,'0')}</span></div>${meals}</div>`;
   }).join('');
-  el.innerHTML=`<div class="wn">
+  el.innerHTML=`<div class="wn plan-head">
     <div class="wc"><button onclick="chWk(-1)">${ic('chevL',16)}</button><span>${wlbl}</span><button onclick="chWk(1)">${ic('chevR',16)}</button></div>
     <div class="pplc">${ic('users',14)}<button onclick="chPpl(-1)">&minus;</button><span>${window._curPpl}</span><button onclick="chPpl(1)">+</button></div>
-  </div>${days}
-  <button class="btn bp" style="margin-top:4px" onclick="genShop()">${ic('cart',16)} Генерувати список покупок</button>`;
+  </div><div class="plan-grid">${days}</div>
+  <button class="btn bp plan-shop-btn" style="margin-top:4px" onclick="genShop()">${ic('cart',16)} Генерувати список покупок</button>`;
 }
 function chWk(d){wkOff+=d;renderPlan();}
 async function chPpl(d){
