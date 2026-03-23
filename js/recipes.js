@@ -114,9 +114,18 @@ function addStep() { window._fd.steps.push(''); renderSteps(); }
 function rmStep(i) { window._fd.steps.splice(i,1); renderSteps(); }
 function handlePhoto(inp) {
   const f=inp.files[0]; if(!f) return;
-  const rd=new FileReader();
-  rd.onload=e=>{window._fd.photo=e.target.result;document.getElementById('pp').innerHTML=`<img src="${e.target.result}">`;};
-  rd.readAsDataURL(f);
+  const img=new Image();
+  img.onload=()=>{
+    const MAX=800;
+    let w=img.width,h=img.height;
+    if(w>MAX||h>MAX){const r=Math.min(MAX/w,MAX/h);w=Math.round(w*r);h=Math.round(h*r);}
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    const data=c.toDataURL('image/jpeg',0.7);
+    window._fd.photo=data;
+    document.getElementById('pp').innerHTML=`<img src="${data}">`;
+  };
+  img.src=URL.createObjectURL(f);
 }
 async function autoCalc() {
   const prods=window._prods||await dbAll('products');
