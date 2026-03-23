@@ -90,7 +90,17 @@ async function dbPut(s,d) {
       if (s !== 'planWeeks' && !d.id) d.id = result;
       await _fs.collection('households').doc(_hhId).collection(s)
         .doc(key).set(JSON.parse(JSON.stringify(d)));
-    } catch(e) { console.warn('sync put:', e.message); }
+    } catch(e) {
+      /* Рецепт з фото завеликий — пробуємо без фото */
+      if(s==='recipes'&&d.photo){
+        try{
+          const copy={...d,photo:null};
+          const key=String(d.id||result);
+          await _fs.collection('households').doc(_hhId).collection(s)
+            .doc(key).set(JSON.parse(JSON.stringify(copy)));
+        }catch(e2){console.warn('sync put:',e2.message);}
+      }else{console.warn('sync put:',e.message);}
+    }
   }
   return result;
 }

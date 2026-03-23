@@ -101,14 +101,27 @@ function _genCode(){
 const STORES=['recipes','products','pantryItems','planWeeks','shopItems'];
 
 async function _pushCloud(){
+  let photoSkipped=0;
   for(const s of STORES){
     const items=await _localAll(s);
     for(const item of items){
       const key=s==='planWeeks'?item.wk:String(item.id);
       if(!key)continue;
-      try{await _fsCol(s).doc(key).set(JSON.parse(JSON.stringify(item)));}catch(e){console.warn('push:',e.message);}
+      try{
+        await _fsCol(s).doc(key).set(JSON.parse(JSON.stringify(item)));
+      }catch(e){
+        /* Якщо рецепт з фото завеликий — завантажуємо без фото */
+        if(s==='recipes'&&item.photo){
+          try{
+            const copy={...item,photo:null};
+            await _fsCol(s).doc(key).set(JSON.parse(JSON.stringify(copy)));
+            photoSkipped++;
+          }catch(e2){console.warn('push:',e2.message);}
+        }else{console.warn('push:',e.message);}
+      }
     }
   }
+  if(photoSkipped)toast(`${photoSkipped} рецепт(ів) завантажено без фото (завеликі)`);
 }
 
 async function _pullCloud(){
@@ -118,7 +131,19 @@ async function _pullCloud(){
       const snap=await _fsCol(s).get();
       if(snap.empty)continue;
       const local=await _localAll(s);
-      for(const item of local)await _localDel(s,item.id||item.wk);
+      /* Не видаляємо локальні якщо в хмарі менше — мерджимо */
+      const cloudKeys=new Set(snap.docs.map(d=>{const dt=d.data();return String(s==='planWeeks'?dt.wk:dt.id);}));
+      for(const item of local){
+        const lk=String(s==='planWeeks'?item.wk:item.id);
+        if(cloudKeys.has(lk))continue;
+        /* Локальний запис відсутній в хмарі — зберігаємо його і пушимо */
+        try{await _fsCol(s).doc(lk).set(JSON.parse(JSON.stringify(item)));}catch(e){
+          if(s==='recipes'&&item.photo){
+            try{await _fsCol(s).doc(lk).set(JSON.parse(JSON.stringify({...item,photo:null})));}catch(e2){}
+          }
+        }
+      }
+      /* Оновлюємо локальні дані з хмари */
       for(const d of snap.docs)await _localPut(s,d.data());
     }
     await normalizeStoredData();
