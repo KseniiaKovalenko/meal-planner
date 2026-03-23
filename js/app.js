@@ -1,9 +1,9 @@
 // ── Global state ──
 let curTab='recipes', wkOff=0, fCat='all', fQ='';
- 
+
 const HDR_ICO = {recipes:'recipes',planner:'calendar',shopping:'cart',pantry:'box'};
 const HDR_LBL = {recipes:'Рецепти',planner:'Планувальник',shopping:'Список покупок',pantry:'Комора'};
- 
+
 function showTab(tab){
   curTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -12,7 +12,7 @@ function showTab(tab){
   document.getElementById('ht').textContent=HDR_LBL[tab];
   document.getElementById('hico').innerHTML=ic(HDR_ICO[tab],16);
   document.getElementById('fab').style.display=tab==='planner'?'none':'flex';
-  document.getElementById('ha').innerHTML=`<button class="hbtn" onclick="showSettings()">${ic('save',16)}</button>`;
+  updateAuthUI();
   render(tab);
 }
 async function render(tab){
@@ -26,15 +26,16 @@ function fabAct(){
   else if(curTab==='shopping')showAddShop();
   else if(curTab==='pantry')showAddPantry();
 }
- 
+
 // ── Service Worker ──
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').catch(console.error);
 }
- 
+
 // ── Init ──
 openDB().then(()=>{
   document.getElementById('hico').innerHTML=ic('recipes',16);
-  document.getElementById('ha').innerHTML=`<button class="hbtn" onclick="showSettings()">${ic('save',16)}</button>`;
+  initFirebase();
+  updateAuthUI();
   render('recipes');
 }).catch(console.error);
