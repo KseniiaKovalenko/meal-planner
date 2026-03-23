@@ -7,7 +7,7 @@ async function renderShop(){
     <div class="sgt"><span class="cdot" style="background:${pcClr(cat)}"></span>${esc(cat)}</div>
     ${grps[cat].map(i=>`<div class="si${i.chk?' ck':''}${i.fromPantry?' frp':''}">
       <input type="checkbox" ${i.chk?'checked':''} onchange="togShop(${i.id},this.checked)">
-      <span class="sin">${esc(i.name)}${i.fromPantry?` <span style="color:var(--a);font-size:10px">${ic('home',11)}</span>`:''}</span>
+      <span class="sin">${esc(i.name)}${i.fromPantry?` <span style="color:var(--a);font-size:10px">${ic('home',11)}${i.chk?'':' частково'}</span>`:''}</span>
       <span class="sia">${i.amt?i.amt+' ':''}${i.unit||''}</span>
       ${i.storeLink?`<a href="${esc(i.storeLink)}" target="_blank" style="color:var(--a);display:flex;align-items:center">${ic('link',15)}</a>`:''}
       <button class="sdl" onclick="delShop(${i.id})">${ic('x',15)}</button>
@@ -22,7 +22,7 @@ async function renderShop(){
   </div>
   ${total>0&&done===total?`<div style="text-align:center;padding:10px;color:var(--a);font-weight:600;font-size:15px">Все куплено!</div>`:''}
   ${gHtml}
-  ${items.some(i=>i.fromPantry)?`<p style="font-size:11px;color:var(--t3);padding:4px 2px;display:flex;align-items:center;gap:4px">${ic('home',12)} є в коморі (відмічено автоматично)</p>`:''}`;
+  ${items.some(i=>i.fromPantry)?`<p style="font-size:11px;color:var(--t3);padding:4px 2px;display:flex;align-items:center;gap:4px">${ic('home',12)} є в коморі${items.some(i=>i.fromPantry&&!i.chk)?' (частково — показано залишок до купівлі)':' (відмічено автоматично)'}</p>`:''}`;
 }
 async function togShop(id,v){const i=await dbGet('shopItems',id);if(i){i.chk=v;await dbPut('shopItems',i);renderShop();}}
 async function delShop(id){await dbDel('shopItems',id);renderShop();}
