@@ -45,24 +45,28 @@ function cloudSignOut(){
 
 /* ── Household ── */
 async function _createHousehold(){
-  const user=_fbAuth.currentUser;if(!user)return;
+  const user=_fbAuth.currentUser;if(!user){toast('Не авторизовано');return;}
   const hhId=user.uid;
   const code=_genCode();
-  /* Спочатку створюємо user doc (потрібен для Firestore Rules) */
-  await _fbFs.collection('users').doc(user.uid).set({
-    householdId:hhId,name:user.displayName||'',email:user.email||''
-  });
-  await _fbFs.collection('households').doc(hhId).set({
-    owner:user.uid,code,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-    members:[user.uid]
-  });
-  await _fbFs.collection('inviteCodes').doc(code).set({householdId:hhId});
-  _hhId=hhId;_fs=_fbFs;
-  await _pushCloud();
-  _startListeners();
-  closeMod();updateAuthUI();render(curTab);
-  toast('Хмарну синхронізацію увімкнено!');
+  try{
+    await _fbFs.collection('users').doc(user.uid).set({
+      householdId:hhId,name:user.displayName||'',email:user.email||''
+    });
+    await _fbFs.collection('households').doc(hhId).set({
+      owner:user.uid,code,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      members:[user.uid]
+    });
+    await _fbFs.collection('inviteCodes').doc(code).set({householdId:hhId});
+    _hhId=hhId;_fs=_fbFs;
+    await _pushCloud();
+    _startListeners();
+    closeMod();updateAuthUI();render(curTab);
+    toast('Хмарну синхронізацію увімкнено!');
+  }catch(e){
+    console.error('createHousehold:',e);
+    toast('Помилка: '+e.message);
+  }
 }
 
 async function _joinWithCode(){
