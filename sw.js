@@ -1,6 +1,6 @@
-const CACHE = 'meal-planner-v6';
+const CACHE = 'meal-planner-v7';
 const ASSETS = [
-  '/', '/index.html', '/manifest.json',
+  '/', '/index.html', '/manifest.json', '/favicon.svg',
   '/css/app.css',
   '/js/firebase-config.js',
   '/js/constants.js', '/js/icons.js', '/js/db.js',
